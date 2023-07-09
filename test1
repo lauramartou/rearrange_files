@@ -1,0 +1,96 @@
+import os
+import re
+import shutil
+
+source_directory = "/Volumes/LaCie/16HH36152/SW2"
+
+destination_directories = [
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_259",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_267",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_268",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_274",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_299",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_300",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_308",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_331",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_332",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_333",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_334",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_336",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_337",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_339",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_340",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_341",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_342",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_343",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_346",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_347",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_348",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_349",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_350",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_351",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_352",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_354",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_355",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_356",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_357",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_359",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_361",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_362",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_363",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_367",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_368",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_369",
+    "/Volumes/LaCie/16HH36152/SW2/SWI2_370",
+]
+# Regular expression pattern to match the first set of integers in a string
+integer_pattern = r"\d+"
+
+# Function to extract the first set of integers from a string
+def extract_first_integer_set(string):
+    match = re.search(integer_pattern, string)
+    if match:
+        integer_string = match.group(0)
+        return int(integer_string)
+    return None
+
+# Iterate over the files in the source directory
+for file in os.listdir(source_directory):
+    # Get the full path of the file in the source directory
+    source_file_path = os.path.join(source_directory, file)
+
+    # Check if the file is a regular file
+    if os.path.isfile(source_file_path):
+        # Extract the first set of integers from the file name
+        file_integer = extract_first_integer_set(file)
+
+        # Check if the file has an integer
+        if file_integer is not None:
+            # Convert the integer to a string
+            file_integer_string = str(file_integer)
+
+            # Check if the integer string matches any subfolder names within the destination directories
+            for destination_directory in destination_directories:
+                # Get the subfolder names within the destination directory
+                subfolders = [name for name in os.listdir(destination_directory)
+                              if os.path.isdir(os.path.join(destination_directory, name))]
+
+                # Iterate over the subfolders
+                for subfolder in subfolders:
+                    # Check if the subfolder name matches the integer string
+                    if subfolder.lower() == file_integer_string.lower():
+                        # Get the destination file path
+                        destination_file_path = os.path.join(destination_directory, subfolder, file)
+
+                        # Check if the destination file already exists
+                        if os.path.exists(destination_file_path):
+                            print(f"File '{file}' already exists in the destination directory: {destination_file_path}")
+                        else:
+                            # Move the file to the subfolder within the destination directory
+                            shutil.move(source_file_path, destination_file_path)
+                            print(f"Moved file '{file}' to the destination directory: {destination_file_path}")
+
+                        # Break the loop after the file is moved to the first matching subfolder
+                        break
+
+print("File rearrangement complete!")
